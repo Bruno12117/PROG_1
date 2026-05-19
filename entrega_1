@@ -1,9 +1,32 @@
+#FUNCIONES:
 
+#es_float
+def es_float(valor):
+    return isinstance(valor, float)
+print(es_float(3.14)) #true  
+print(es_float(5)) #false
 
+#es_string
+def es_string(valor):
+    return isinstance(valor, str)
+print(es_string("Hola"))  # True
+print(es_string(123))     # False
 
+#es_int
+def es_int(valor):
+    return isinstance(valor, int)
+print(es_int(10))    # True
+print(es_int(3.5))   # False
 
+#es_character
+def es_character(valor):
+    return isinstance(valor, str) and len(valor) == 1
+print(es_character("a"))     # True
+print(es_character("hola"))  # False
 
-
-
-
-
+#es_email
+def es_email(valor):
+    return isinstance(valor, str) and "@" in valor and "." in valor
+print(es_email("test@gmail.com"))  # True
+print(es_email("hola"))            # False
+print(es_email(123))               # False
