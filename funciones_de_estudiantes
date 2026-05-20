@@ -1,0 +1,233 @@
+MAX_ALUMNOS = 30
+
+# VALIDACIÓNES 
+def validar_legajo():
+    """Funcion que verifica si el legado es un numero entero
+    
+    Args: none
+    
+    Returns: Si el legajo no es un numero entero, tira error y se queda 
+    en bucle hasta que sea correcto
+    """
+    while True:
+        entrada = input("Ingrese el número de legajo: ").strip()
+        if entrada.isdigit():
+            return int(entrada)
+        print("Error: El legajo debe contener únicamente números enteros.")
+
+
+ 
+def validar_nombre():
+    """Funcion para verificar que un nombre no esté vacío 
+    y contenga solo letras y espacios.
+    
+    Args: none
+    
+    Returns: Si el nombre no esta escrito correctamente tira error y hay que escribirlo 
+    de nuevo
+    """
+    while True:
+        entrada = input("Ingrese Apellido y Nombre: ").strip()
+        if entrada.replace(" ", "").isalpha() and entrada != "":
+            return entrada
+        print("Error: El nombre debe contener solo letras y espacios.")
+
+
+def validar_genero():
+    """funcion para verificar que el genero este escrito correctamente
+    (si o si en MAYUSCULA)
+    
+    Args: none
+    
+    Returns: si el genero esta mal escrito da error y hay que escribirlo de nuevo
+    """
+    while True:
+        entrada = input("Ingrese el género (F / M / X): ").strip().upper()
+        if entrada in ["F", "M", "X"]:
+            return entrada
+        print("Error: Género inválido. Opciones permitidas: F, M o X.")
+
+def validar_nota(mensaje):
+    """funcion que toma un parametro para pedir una nota
+    
+    Args: none
+    
+    Returns: Si la nota no esta comprendida entre 1 y 10, da error y hay que escribirla 
+    de nuevo
+    """
+    while True:
+        entrada = input(mensaje).strip()
+        if entrada.isdigit():
+            nota = int(entrada)
+            if 1 <= nota <= 10:
+                return nota
+        print("Error: La nota debe ser un número entero entre 1 y 10.")
+
+                                        # ÍTEMS DEL MENÚ 
+
+# Carga manual de datos
+def cargar_datos(legajos, nombres, generos, parciales1, parciales2):
+
+    """Ejecuta un bucle 'for' que se repite tantas veces como diga MAX_ALUMNOS.
+    En cada vuelta llama a las funciones de validación y agrega los resultados a las listas"""
+    
+    print(f"Iniciando carga manual de {MAX_ALUMNOS} estudiantes")
+    for i in range(MAX_ALUMNOS):
+        print(f"Estudiante {i + 1}:")
+        legajos.append(validar_legajo())
+        nombres.append(validar_nombre())
+        generos.append(validar_genero())
+        parciales1.append(validar_nota("Nota del Primer Parcial (1-10): "))
+        parciales2.append(validar_nota("Nota del Segundo Parcial (1-10): "))
+    print("\nCarga de datos finalizada con éxito.")
+
+# Mostrar un elemento
+def mostrar_un_elemento(legajo, nombre, genero, p1, p2, promedio=None):
+    
+    """ Imprime por pantalla la ficha de un solo alumno usando f-strings con formato.
+    El parámetro 'promedio' es opcional (por defecto vale None) por si todavía no se calculó"""
+    
+    if promedio is not None:
+        print(f"Legajo: {legajo:<6} | Nombre: {nombre:<20} | Género: {genero} | P1: {p1:<2} | P2: {p2:<2} | Promedio: {promedio:.2f}")
+    else:
+        print(f"Legajo: {legajo:<6} | Nombre: {nombre:<20} | Género: {genero} | P1: {p1:<2} | P2: {p2:<2}")
+
+def recorrer_y_mostrar(legajos, nombres, generos, parciales1, parciales2, promedios_lista):
+    
+    "Recorre la lista de legajos mediante un 'for' por índice."
+    "Chequea si la lista de promedios tiene elementos para mandarla o no a la función de mostrar."
+    
+    print("REPORTE GENERAL DE ESTUDIANTES")
+    for i in range(len(legajos)):
+        if len(promedios_lista) == 0:
+            prom = None
+        else:
+            prom = promedios_lista[i]
+            
+        mostrar_un_elemento(legajos[i], nombres[i], generos[i], parciales1[i], parciales2[i], prom)
+
+# Calcular promedios
+def calcular_todos_los_promedios(parciales1, parciales2, promedios):
+    
+    "Limpia la lista de promedios previa y calcula el promedio matemático"
+    "de cada alumno combinando los dos parciales. Guarda los decimales usando / 2.0."
+
+    promedios.clear()
+    for i in range(len(parciales1)):
+        prom = (parciales1[i] + parciales2[i]) / 2.0
+        promedios.append(prom)
+    print("Promedios calculados y guardados exitosamente.")
+
+# Ordenar por promedio
+def ordenar_por_promedio(legajos, nombres, generos, parciales1, parciales2, promedios, criterio="DESC"):
+    
+    "Algoritmo de Ordenamiento Burbuja clásico de dos bucles anidados."
+    "Compara los promedios contiguos y si cumple el criterio (ASC o DESC), intercambia de lugar"
+    " los valores en la lista de promedios y arrastra el cambio en todas las demás listas en paralelo."
+    
+    n = len(promedios)
+    for i in range(n - 1):
+        for j in range(n - 1 - i):
+            debe_intercambiar = False
+            if criterio == "ASC" and promedios[j] > promedios[j + 1]:
+                debe_intercambiar = True
+            elif criterio == "DESC" and promedios[j] < promedios[j + 1]:
+                debe_intercambiar = True
+                
+            if debe_intercambiar:
+                promedios[j], promedios[j + 1] = promedios[j + 1], promedios[j]
+                legajos[j], legajos[j + 1] = legajos[j + 1], legajos[j]
+                nombres[j], nombres[j + 1] = nombres[j + 1], nombres[j]
+                generos[j], generos[j + 1] = generos[j + 1], generos[j]
+                parciales1[j], parciales1[j + 1] = parciales1[j + 1], parciales1[j]
+                parciales2[j], parciales2[j + 1] = parciales2[j + 1], parciales2[j]
+
+# Mostrar mejores promedios
+def mostrar_mejores_promedios(legajos, nombres, generos, parciales1, parciales2, promedios):
+    "Busca cuál es la nota de promedio más alta recorriendo la lista entera."
+    "Luego, hace otra pasada para imprimir los datos de todos los alumnos que tengan esa nota máxima. "
+    if not promedios:
+        print("Primero debe calcular los promedios (Opción 3).")
+        return
+    
+    mayor_promedio = promedios[0]
+    for p in promedios:
+        if p > mayor_promedio:
+            mayor_promedio = p
+            
+    print(f"Estudiante(s) con el Mayor Promedio ({mayor_promedio:.2f})")
+    for i in range(len(promedios)):
+        if promedios[i] == mayor_promedio:
+            mostrar_un_elemento(legajos[i], nombres[i], generos[i], parciales1[i], parciales2[i], promedios[i])
+
+# Buscar por legajo 
+def buscar_por_legajo(legajos, nombres, generos, parciales1, parciales2, promedios):
+    "Pide un legajo a buscar, recorre las listas secuencialmente y si coincide,"
+    "muestra toda su información en pantalla. Tiene un freno 'break' para optimizar cuando lo encuentra."
+
+    print("Búsqueda de Estudiante")
+    buscado = validar_legajo()
+    encontrado = False
+    
+    for i in range(len(legajos)):
+        if legajos[i] == buscado:
+            print("Estudiante encontrado:")
+            if len(promedios) == 0:
+                prom = None
+            else:
+                prom = promedios[i]
+            mostrar_un_elemento(legajos[i], nombres[i], generos[i], parciales1[i], parciales2[i], prom)
+            encontrado = True
+            break
+            
+    if not encontrado:
+        print(f"No se encontró ningún estudiante con el legajo {buscado}.")
+
+# Hardcodeo de datos de prueba para pruebas
+
+"Opción 8: Utiliza el método '.extend()' para inyectar directamente listas fijas"
+" precargadas con 30 registros falsos. Sirve para agilizar las pruebas del examen"
+
+def cargar_datos_prueba(legajos, nombres, generos, parciales1, parciales2):
+    
+    ejemplos_legajos = [
+        101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
+        111, 112, 113, 114, 115, 116, 117, 118, 119, 120,
+        121, 122, 123, 124, 125, 126, 127, 128, 129, 130
+    ]
+    
+    ejemplos_nombres = [
+        "Gomez Juan", "Perez Maria", "Rodriguez Carlos", "Lopez Ana", "Diaz Javier",
+        "Martinez Luis", "Sánchez Laura", "Romero Diego", "Álvarez Sofía", "Torres Pablo",
+        "Fernández Elena", "Ramírez Bruno", "Ruiz Natalia", "Castro Gabriel", "García Valentina",
+        "Acosta Mateo", "Benítez Camila", "Herrera Lucas", "Medina Zoe", "Flores Thiago",
+        "Silva Martina", "Pereira Bautista", "Ríos Victoria", "Mendoza Julián", "Morales Alma",
+        "Suárez Joaquín", "Ortega Mia", "Delgado Felipe", "Morínigo Sol", "Giménez Benjamín"
+    ]
+    
+    ejemplos_generos = [
+        "M", "F", "X", "F", "M", "M", "F", "M", "F", "M",
+        "F", "M", "F", "M", "F", "M", "F", "M", "F", "M",
+        "F", "M", "F", "M", "F", "M", "F", "M", "F", "M"
+    ]
+    
+    ejemplos_p1 = [
+        8, 4, 7, 9, 5, 6, 8, 3, 10, 7,
+        5, 9, 6, 4, 8, 7, 9, 5, 6, 8,
+        4, 7, 10, 3, 6, 8, 5, 9, 7, 6
+    ]
+    
+    ejemplos_p2 = [
+        7, 6, 9, 10, 4, 7, 8, 5, 9, 6,
+        7, 8, 6, 5, 9, 8, 8, 4, 7, 9,
+        5, 8, 9, 4, 7, 7, 6, 10, 8, 5
+    ]
+    
+    for i in range(len(ejemplos_legajos)):
+        legajos.append(ejemplos_legajos[i])
+        nombres.append(ejemplos_nombres[i])
+        generos.append(ejemplos_generos[i])
+        parciales1.append(ejemplos_p1[i])
+        parciales2.append(ejemplos_p2[i])
+        
+    print("\n¡Se han cargado 30 estudiantes de prueba correctamente!")    
