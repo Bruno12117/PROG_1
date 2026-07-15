@@ -1,101 +1,89 @@
-MAIN PRACTICA_SP2
-from practica_sp2 import*
+from funciones2 import * 
 
-def menu():
-    """Imprime el menú de opciones en consola."""
-    print("\n=== MENÚ DE OPCIONES ===")
-    print("2 - Cargar datos de estudiantes (Máx 3)")
-    print("3 - Mostrar todos los estudiantes")
-    print("4 - Calcular promedios")
-    print("5 - Mostrar ordenados por promedio (DESC)")
-    print("6 - Mostrar estudiante(s) con mayor promedio")
-    print("7 - Buscar estudiante por legajo")
-    print("0 - Salir")
+lista_estudiantes =  [
+        {"legajo": 1, "ape_nom": "Lopez Pedro", "genero": "M", "pp": 6, "sp": 7, "prom": 0.0},
+        {"legajo": 2, "ape_nom": "Perez Alba", "genero": "F", "pp": 9, "sp": 6, "prom": 0.0},
+        {"legajo": 3, "ape_nom": "Gil Ariel", "genero": "X", "pp": 7, "sp": 6, "prom": 0.0}
+    ]
 
-def main():
-    lista_estudiantes = []
-    MAX_ALUMNOS = 3
-    promedios_calculados = False # Control de flujo para saber si ya se pasó por el ítem 4
+for i in range(7):
+        lista_estudiantes.append({
+            "legajo": 0, "ape_nom": "", "genero": "", "pp": 0, "sp": 0, "prom": 0.0
+        })
 
-    while True:
-        menu()
-        opcion = input("Seleccione una opción: ").strip()
+promedios_calculados = False
+ejecutar = True
+datos_cargados = False  
 
-        if opcion == "0":
-            print("Saliendo del programa...")
-            break
+while ejecutar == True:
+    print()
+    print("MENU DE OPCIONES")
+    print("1 - Leer lista de estudiantes (archivo .json)") 
+    print("2 - Carga de los datos") 
+    print("3 - Mostrar datos de los estudiantes") 
+    print("4 - Calcular promedios de estudiantes") 
+    print("5 - Mostrar datos ordenados por promedio (DESC)") 
+    print("6 - Mostrar estudiante/s con mayor promedio") 
+    print("7 - Buscar un estudiante por legajo") 
+    print("8 - Exportar la lista actual a JSON") 
+    print("9 - Exportar la lista actual a CSV") 
+    print("10 - Salir del programa") 
+    
+    opcion = input("Ingrese una opción (1-10): ")
 
-        # Nota 0: Validación de datos cargados previamente
-        if opcion in ["3", "4", "5", "6", "7"] and len(lista_estudiantes) == 0:
-            print("\n[!] Error: No se puede acceder a esta opción sin antes haber cargado los datos (Opción 2).")
-            continue
-
-        # Ítem 2: Carga de datos
-        if opcion == "2":
-            if len(lista_estudiantes) >= MAX_ALUMNOS:
-                print(f"\n[!] Ya se alcanzó el límite máximo de {MAX_ALUMNOS} estudiantes.")
-                continue
+    if opcion >= "3" and opcion <= "9":
+            if datos_cargados == False: 
+                print("Error: No se puede acceder. Debe cargar datos (opcion 2) o leer el archivo .json (opcion 1) primero.")
+                continue 
             
-            print(f"\n--- Carga del Estudiante {len(lista_estudiantes) + 1} de {MAX_ALUMNOS} ---")
-            legajo = validar_legajo("Ingrese el legajo (entero): ") #mensaje
-            nombre = validar_nombre_apellido("Ingrese Apellido y Nombre: ")
-            genero = validar_genero("Ingrese género (F / M / X): ")
-            parcial1 = validar_nota("Ingrese nota del 1° Parcial (1-10): ")
-            parcial2 = validar_nota("Ingrese nota del 2° Parcial (1-10): ")
-
-            # Creamos el diccionario del estudiante
-            estudiante = {
-                "legajo": legajo,
-                "nombre": nombre,
-                "genero": genero,
-                "parcial1": parcial1,
-                "parcial2": parcial2
-            }
-            lista_estudiantes.append(estudiante)
-            print("Estudiante cargado con éxito.")
-
-        # Ítem 3: Mostrar todos los datos cargados originariamente
-        elif opcion == "3":
-            print("\n=== LISTA DE ESTUDIANTES REGISTRADOS ===")
-            recorrer_y_mostrar_estudiantes(lista_estudiantes, mostrar_promedio=promedios_calculados)
-
-        # Ítem 4: Calcular promedio
-        elif opcion == "4":
-            calcular_promedios(lista_estudiantes)
-            promedios_calculados = True
-            print("\nPromedios calculados y guardados con éxito.")
-
-        # Ítem 5: Mostrar ordenados por promedio DESC
-        elif opcion == "5":
-            if not promedios_calculados:
-                print("\n[!] Advertencia: Primero debe calcular los promedios (Opción 4) para ordenar correctamente.")
-                continue
-            print("\n=== ESTUDIANTES ORDENADOS POR PROMEDIO (DESC) ===")
-            lista_ordenada = ordenar_por_promedio_desc(lista_estudiantes)
-            recorrer_y_mostrar_estudiantes(lista_ordenada, mostrar_promedio=True)
-
-        # Ítem 6: Mostrar mayor promedio
-        elif opcion == "6":
-            if not promedios_calculados:
-                print("\n[!] Advertencia: Primero debe calcular los promedios (Opción 4).")
-                continue
-            print("\n=== ESTUDIANTE(S) CON MAYOR PROMEDIO ===")
-            mejores = buscar_mayor_promedio(lista_estudiantes)
-            recorrer_y_mostrar_estudiantes(mejores, mostrar_promedio=True)
-
-        # Ítem 7: Buscar por legajo
-        elif opcion == "7":
-            legajo_búsqueda = validar_legajo("Ingrese el legajo del estudiante a buscar: ")
-            resultado = buscar_por_legajo(lista_estudiantes, legajo_búsqueda)
+    match opcion: 
+        case "1":
+            lista_estudiantes = leer_archivo_json() 
+            datos_cargados = True 
             
-            if resultado:
-                print("\n=== ESTUDIANTE ENCONTRADO ===")
-                recorrer_y_mostrar_estudiantes(resultado, mostrar_promedio=promedios_calculados)
+            if lista_estudiantes[0]["prom"] > 0: 
+                promedios_calculados = True  
             else:
-                print(f"\nNo se encontró ningún estudiante con el legajo {legajo_búsqueda}.")
+                promedios_calculados = False 
 
-        else:
-            print("Opción inválida. Intente nuevamente.")
-
-if __name__ == "__main__":
-    main()
+        case "2":
+            cargar_datos(lista_estudiantes)
+            promedios_calculados = False
+            datos_cargados = True 
+            
+        case "3":
+            recorrer_y_mostrar(lista_estudiantes)
+            
+        case "4":
+            calcular_promedio(lista_estudiantes)
+            promedios_calculados = True
+            
+        case "5": 
+            if promedios_calculados == False:
+                print("Debe calcular los promedios primero (opcion 4).")     
+            else:
+                ordenar_por_promedio(lista_estudiantes) 
+                print("Lista ordenada descendente:")
+                recorrer_y_mostrar(lista_estudiantes)
+            
+        case "6":
+            if promedios_calculados == False:
+                print("Debe calcular los promedios primero (opcion 4).")
+            else:
+                mostrar_mejores_promedios(lista_estudiantes)
+            
+        case "7":
+            buscar_por_legajo(lista_estudiantes)
+            
+        case "8":
+            exportar_a_json(lista_estudiantes)
+            
+        case "9":
+            exportar_a_csv(lista_estudiantes)
+            
+        case "10":
+            salir_programa()
+            ejecutar = False
+            
+        case _:
+            print("Opción no válida. Por favor, ingrese un número del 1 al 10.")
